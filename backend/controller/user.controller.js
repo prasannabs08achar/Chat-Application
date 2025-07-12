@@ -9,15 +9,15 @@ const generateToken=(userId)=>{
 }
 const signup=async (req,res) => {
     try {
-        const {fullName,email,password,role}=req.body;
-        if(!fullName || !email || !password || !role) 
+        const {fullName,email,password,bio}=req.body;
+        if(!fullName || !email || !password || !bio) 
             return res.json({success:false, message:"All fields are required"});
         const user=await User.findOne({email});
         if(user)
             return res.json({success:false, message:"User already exists"});
         const salt=await bcrypt.genSalt(10);
         const hashedPassword=await bcrypt.hash(password,salt);
-        const newUser=new User({fullName,email,password:hashedPassword,role});
+        const newUser=new User({fullName,email,password:hashedPassword,bio});
         const token=generateToken(newUser._id);
         await newUser.save();
         return res.status(201).json({success:true, userData:newUser,token, message:"User created successfully"})
